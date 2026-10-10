@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" stylesheets="@sigtoa.css" styleClass="fondo">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets bottom="12"/></padding>
+            <Label text="Registrar siembra" styleClass="titulo"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="volverButton" text="Volver al menú" onAction="#volver"/>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="formulario">
+            <VBox spacing="14" styleClass="tarjeta">
+                <GridPane hgap="12" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="200"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <Label text="Campaña *" GridPane.rowIndex="0"/>
+                    <ComboBox fx:id="campaniaCombo" promptText="Seleccionar" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Establecimiento" GridPane.rowIndex="1"/>
+                    <ComboBox fx:id="establecimientoCombo" promptText="Filtra los lotes" maxWidth="Infinity" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Lote *" GridPane.rowIndex="2"/>
+                    <ComboBox fx:id="loteCombo" promptText="Elegir primero el establecimiento" maxWidth="Infinity" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Semilla / híbrido *" GridPane.rowIndex="3"/>
+                    <ComboBox fx:id="semillaCombo" promptText="Seleccionar" maxWidth="Infinity" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Cultivo" GridPane.rowIndex="4"/>
+                    <Label fx:id="cultivoLabel" text="Según la semilla elegida" styleClass="subtitulo" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Fecha de inicio *" GridPane.rowIndex="5"/>
+                    <DatePicker fx:id="fechaInicioPicker" promptText="dd/mm/aaaa" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                    <Label text="Fecha de fin *" GridPane.rowIndex="6"/>
+                    <DatePicker fx:id="fechaFinPicker" promptText="dd/mm/aaaa" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    <Label text="Total de semilla (kg) *" GridPane.rowIndex="7"/>
+                    <TextField fx:id="semillaKgField" promptText="Por ejemplo 600" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                </GridPane>
+
+                <Separator/>
+                <Label text="Datos técnicos opcionales" styleClass="subtitulo"/>
+                <GridPane hgap="12" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="200"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <Label text="Hectáreas monitor" GridPane.rowIndex="0"/>
+                    <TextField fx:id="hectareasField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Tractor" GridPane.rowIndex="1"/>
+                    <TextField fx:id="tractorField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Marcha de trabajo" GridPane.rowIndex="2"/>
+                    <TextField fx:id="marchaTrabajoField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Velocidad de siembra" GridPane.rowIndex="3"/>
+                    <TextField fx:id="velocidadField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Sembradora" GridPane.rowIndex="4"/>
+                    <TextField fx:id="sembradoraField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Engranaje conductor / conducido" GridPane.rowIndex="5"/>
+                    <HBox spacing="8" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                        <TextField fx:id="engranajeConductorField" promptText="Conductor" HBox.hgrow="ALWAYS"/>
+                        <TextField fx:id="engranajeConducidoField" promptText="Conducido" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                    <Label text="Placa" GridPane.rowIndex="6"/>
+                    <TextField fx:id="placaField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+                    <Label text="Granos por metro" GridPane.rowIndex="7"/>
+                    <TextField fx:id="granoPorMetroField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+                    <Label text="Calibre" GridPane.rowIndex="8"/>
+                    <TextField fx:id="calibreField" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+                    <Label text="Desvío" GridPane.rowIndex="9"/>
+                    <TextField fx:id="desvioField" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+                    <Label text="Fertilizante" GridPane.rowIndex="10"/>
+                    <TextField fx:id="fertilizanteField" GridPane.rowIndex="10" GridPane.columnIndex="1"/>
+                    <Label text="Fertilizante (kg/ha)" GridPane.rowIndex="11"/>
+                    <TextField fx:id="fertilizanteKgHaField" GridPane.rowIndex="11" GridPane.columnIndex="1"/>
+                    <Label text="Marcha caja fertilizante" GridPane.rowIndex="12"/>
+                    <TextField fx:id="marchaCajaField" GridPane.rowIndex="12" GridPane.columnIndex="1"/>
+                    <Label text="Comentarios" GridPane.rowIndex="13"/>
+                    <TextArea fx:id="comentariosArea" prefRowCount="3" wrapText="true" GridPane.rowIndex="13" GridPane.columnIndex="1"/>
+                </GridPane>
+            </VBox>
+        </ScrollPane>
+    </center>
+    <bottom>
+        <VBox spacing="8">
+            <padding><Insets top="12"/></padding>
+            <Label fx:id="mensajeLabel" wrapText="true" maxWidth="Infinity" styleClass="mensaje"/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Button fx:id="guardarButton" text="Guardar siembra" defaultButton="true" onAction="#guardar" styleClass="principal"/>
+                <Button text="Cancelar" cancelButton="true" onAction="#volver"/>
+                <Label text="* Campos obligatorios" styleClass="subtitulo"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" stylesheets="@sigtoa.css" styleClass="fondo">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+    <top>
+        <VBox spacing="12">
+            <padding><Insets bottom="12"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label text="Trazabilidad por campaña" styleClass="titulo"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="volverButton" text="Volver al menú" onAction="#volver"/>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="Campaña *"/>
+                <ComboBox fx:id="campaniaCombo" promptText="Seleccionar" prefWidth="160"/>
+                <Button fx:id="consultarButton" text="Consultar" defaultButton="true" onAction="#consultar" styleClass="principal"/>
+                <Label text="Siembra → trabajos → cosecha, agrupados por lote" styleClass="subtitulo"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <TreeTableView fx:id="trazabilidadTable">
+            <columnResizePolicy><TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+            <placeholder><Label text="Elegí una campaña y presioná Consultar."/></placeholder>
+            <columns>
+                <TreeTableColumn fx:id="loteFechaColumn" text="Lote / fecha" prefWidth="170" sortable="false"/>
+                <TreeTableColumn fx:id="etapaColumn" text="Etapa" prefWidth="170" sortable="false"/>
+                <TreeTableColumn fx:id="detalleColumn" text="Detalle" prefWidth="150" sortable="false"/>
+                <TreeTableColumn fx:id="cantidadColumn" text="Cantidad" prefWidth="90" sortable="false"/>
+                <TreeTableColumn fx:id="rindeColumn" text="Rinde" prefWidth="90" sortable="false"/>
+                <TreeTableColumn fx:id="ordenColumn" text="Orden · contratista" prefWidth="170" sortable="false"/>
+                <TreeTableColumn fx:id="cicloColumn" text="Ciclo" prefWidth="170" sortable="false"/>
+            </columns>
+        </TreeTableView>
+    </center>
+    <bottom>
+        <VBox spacing="8">
+            <padding><Insets top="12"/></padding>
+            <Label fx:id="mensajeLabel" wrapText="true" maxWidth="Infinity" styleClass="mensaje"/>
+        </VBox>
+    </bottom>
+</BorderPane>

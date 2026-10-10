@@ -1,0 +1,84 @@
+.root {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+    -fx-text-fill: #24382f;
+}
+
+.fondo {
+    -fx-background-color: #f2f5f1;
+}
+
+.tarjeta {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 24;
+}
+
+.marca {
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #215c3d;
+}
+
+.titulo {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+}
+
+.subtitulo {
+    -fx-text-fill: #52675a;
+    -fx-font-size: 15px;
+}
+
+.text-field {
+    -fx-padding: 9 12;
+    -fx-background-radius: 5;
+}
+
+.button {
+    -fx-padding: 9 16;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.principal {
+    -fx-background-color: #215c3d;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.principal:hover {
+    -fx-background-color: #184b30;
+}
+
+.button:focused {
+    -fx-border-color: #47875e;
+    -fx-border-radius: 5;
+}
+
+.button:disabled {
+    -fx-opacity: 0.7;
+    -fx-cursor: default;
+}
+
+.mensaje {
+    -fx-text-fill: #8d362a;
+}
+
+.exito {
+    -fx-text-fill: #215c3d;
+}
+
+.dato {
+    -fx-font-weight: bold;
+}
+
+.formulario {
+    -fx-background-color: transparent;
+}
+
+.campo-error {
+    -fx-border-color: #8d362a;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+}

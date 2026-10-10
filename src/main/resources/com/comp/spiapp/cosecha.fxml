@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" stylesheets="@sigtoa.css" styleClass="fondo">
+    <padding><Insets top="20" right="24" bottom="20" left="24"/></padding>
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <padding><Insets bottom="12"/></padding>
+            <Label text="Registrar cosecha" styleClass="titulo"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button fx:id="volverButton" text="Volver al menú" onAction="#volver"/>
+        </HBox>
+    </top>
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="formulario">
+            <VBox spacing="14" styleClass="tarjeta">
+                <GridPane hgap="12" vgap="10">
+                    <columnConstraints>
+                        <ColumnConstraints minWidth="170"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <Label text="Siembra *" GridPane.rowIndex="0"/>
+                    <ComboBox fx:id="siembraCombo" promptText="Campaña · campo · lote · fecha · semilla" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <Label text="Fecha de inicio *" GridPane.rowIndex="1"/>
+                    <DatePicker fx:id="fechaInicioPicker" promptText="dd/mm/aaaa" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                    <Label text="Fecha de fin *" GridPane.rowIndex="2"/>
+                    <DatePicker fx:id="fechaFinPicker" promptText="dd/mm/aaaa" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                    <Label text="Hectáreas cosechadas" GridPane.rowIndex="3"/>
+                    <TextField fx:id="hectareasField" promptText="Sin hectáreas el rinde queda sin dato" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                    <Label text="Humedad (%)" GridPane.rowIndex="4"/>
+                    <TextField fx:id="humedadField" promptText="Entre 0 y 100" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+                    <Label text="Acopio" GridPane.rowIndex="5"/>
+                    <ComboBox fx:id="acopioCombo" promptText="Seleccionar" maxWidth="Infinity" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+                </GridPane>
+
+                <Separator/>
+                <Label text="Pesajes en kg, en el orden de llegada de los camiones *" styleClass="subtitulo"/>
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Bruto"/>
+                    <TextField fx:id="brutoField" promptText="30000" prefColumnCount="8" onAction="#agregarPesaje"/>
+                    <Label text="Tara"/>
+                    <TextField fx:id="taraField" promptText="10000" prefColumnCount="8" onAction="#agregarPesaje"/>
+                    <Button fx:id="agregarPesajeButton" text="Agregar pesaje" onAction="#agregarPesaje"/>
+                </HBox>
+                <TableView fx:id="pesajesTable" prefHeight="170">
+                    <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+                    <placeholder><Label text="Todavía no se agregaron pesajes."/></placeholder>
+                    <columns>
+                        <TableColumn fx:id="ordenColumn" text="Orden" sortable="false"/>
+                        <TableColumn fx:id="brutoColumn" text="Bruto" sortable="false"/>
+                        <TableColumn fx:id="taraColumn" text="Tara" sortable="false"/>
+                        <TableColumn fx:id="netoColumn" text="Neto" sortable="false"/>
+                    </columns>
+                </TableView>
+                <HBox spacing="24" alignment="CENTER_LEFT">
+                    <Button fx:id="quitarPesajeButton" text="Quitar pesaje seleccionado" onAction="#quitarPesaje"/>
+                    <Label text="Peso total:"/>
+                    <Label fx:id="pesoTotalLabel" styleClass="dato"/>
+                    <Label text="Rinde:"/>
+                    <Label fx:id="rindeLabel" styleClass="dato"/>
+                </HBox>
+                <Label text="Comentarios"/>
+                <TextArea fx:id="comentariosArea" prefRowCount="3" wrapText="true"/>
+            </VBox>
+        </ScrollPane>
+    </center>
+    <bottom>
+        <VBox spacing="8">
+            <padding><Insets top="12"/></padding>
+            <Label fx:id="mensajeLabel" wrapText="true" maxWidth="Infinity" styleClass="mensaje"/>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Button fx:id="guardarButton" text="Guardar cosecha" onAction="#guardar" styleClass="principal"/>
+                <Button text="Cancelar" cancelButton="true" onAction="#volver"/>
+                <Label text="* Campos obligatorios. Se requiere al menos un pesaje válido." styleClass="subtitulo"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

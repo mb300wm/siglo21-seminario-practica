@@ -16,6 +16,12 @@ INSERT INTO usuarios (nombre, usuario_login, password_hash, activo)
 VALUES ('Ingeniero de prueba', 'demo_ingeniero', 'SIN_LOGIN_DATOS_DE_PRUEBA', 0);
 SET @ingeniero = LAST_INSERT_ID();
 
+-- Usuario activo para ingresar a SIGTOA. Contraseña de demostración: sigtoa-demo-2026
+-- Se guarda solo el hash Argon2id con sal (RNF11), nunca la contraseña.
+INSERT INTO usuarios (nombre, usuario_login, password_hash, activo)
+VALUES ('Usuario de demostración', 'usuario_demo',
+        '$argon2id$v=19$m=19456,t=2,p=1$H9+qNw3g8o1psExufQ+fcg$ajN0YDzm+nElzbFiAxR1W4cfoHeepOsXlGLxYOnvmNg', 1);
+
 -- ---------------------------------------------------------------------
 -- Campañas
 -- ---------------------------------------------------------------------

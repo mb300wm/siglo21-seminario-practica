@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" spacing="18" stylesheets="@sigtoa.css" styleClass="fondo">
+    <padding><Insets top="28" right="32" bottom="28" left="32"/></padding>
+    <HBox alignment="CENTER_LEFT" spacing="16">
+        <Label text="SIGTOA" styleClass="marca"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="cerrarSesionButton" text="Cerrar sesión" onAction="#cerrarSesion"/>
+    </HBox>
+    <VBox spacing="6">
+        <Label text="Menú principal" styleClass="titulo"/>
+        <Label fx:id="usuarioLabel" styleClass="subtitulo"/>
+    </VBox>
+    <VBox spacing="12" styleClass="tarjeta" VBox.vgrow="ALWAYS">
+        <Label text="Operaciones de campo" styleClass="subtitulo"/>
+        <Button fx:id="siembrasButton" text="Registrar siembra" onAction="#registrarSiembra" maxWidth="Infinity" styleClass="principal"/>
+        <Button fx:id="cosechasButton" text="Registrar cosecha" onAction="#registrarCosecha" maxWidth="Infinity" styleClass="principal"/>
+        <Label text="Órdenes de trabajo e insumos" styleClass="subtitulo"/>
+        <Button fx:id="ordenesButton" text="Registrar orden de trabajo" onAction="#registrarOrden" maxWidth="Infinity" styleClass="principal"/>
+        <Button fx:id="aplicacionesButton" text="Aplicar insumos a una orden" onAction="#aplicarInsumos" maxWidth="Infinity" styleClass="principal"/>
+        <Label text="Consultas" styleClass="subtitulo"/>
+        <Button fx:id="trazabilidadButton" text="Trazabilidad por campaña" onAction="#consultarTrazabilidad" maxWidth="Infinity" styleClass="principal"/>
+    </VBox>
+</VBox>

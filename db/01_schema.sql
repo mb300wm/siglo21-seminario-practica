@@ -729,3 +729,17 @@ DELIMITER ;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+
+-- -----------------------------------------------------
+-- Usuario de MySQL con el que se conecta SIGTOA
+-- -----------------------------------------------------
+-- La aplicación no usa root: este usuario solo lee y modifica datos de agro, no puede crear
+-- ni borrar tablas, ni acceder a otras bases. Solo acepta conexiones desde el mismo equipo.
+-- La contraseña es de demostración (igual que usuario_demo). En el servidor de la empresa
+-- se cambia con ALTER USER y se indica en config/db.local.properties, sin recompilar.
+CREATE USER IF NOT EXISTS 'sigtoa_app'@'localhost' IDENTIFIED BY 'sigtoa-app-2026';
+-- Si el usuario ya existía con otra contraseña, CREATE USER IF NOT EXISTS no la cambia.
+ALTER USER 'sigtoa_app'@'localhost' IDENTIFIED BY 'sigtoa-app-2026';
+
+-- SELECT ... FOR UPDATE (numeración de órdenes) requiere SELECT y UPDATE.
+GRANT SELECT, INSERT, UPDATE, DELETE ON agro.* TO 'sigtoa_app'@'localhost';

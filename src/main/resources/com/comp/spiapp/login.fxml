@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<StackPane xmlns:fx="http://javafx.com/fxml/1" stylesheets="@sigtoa.css" styleClass="fondo">
+    <padding>
+        <Insets top="32" right="32" bottom="32" left="32" />
+    </padding>
+    <VBox alignment="CENTER_LEFT" spacing="14" maxWidth="420" maxHeight="430" styleClass="tarjeta">
+        <Label text="SIGTOA" styleClass="marca" />
+        <Label text="Operaciones agrícolas" styleClass="subtitulo" />
+        <Separator />
+        <Label text="Iniciar sesión" styleClass="titulo" />
+        <VBox spacing="6">
+            <Label text="Usuario" labelFor="$usuarioField" />
+            <TextField fx:id="usuarioField" promptText="Tu usuario de SIGTOA" onAction="#ingresar" />
+        </VBox>
+        <VBox spacing="6">
+            <Label text="Contraseña" labelFor="$passwordField" />
+            <PasswordField fx:id="passwordField" promptText="Tu contraseña" onAction="#ingresar" />
+        </VBox>
+        <Button fx:id="ingresarButton" text="Ingresar" defaultButton="true" onAction="#ingresar"
+            maxWidth="Infinity" styleClass="principal" />
+        <Label fx:id="mensajeLabel" text="" wrapText="true" minHeight="46" maxWidth="Infinity"
+            styleClass="mensaje" />
+    </VBox>
+</StackPane>
