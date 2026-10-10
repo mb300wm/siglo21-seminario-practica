@@ -29,7 +29,3 @@ No hace falta instalar Maven. El proyecto incluye el wrapper `mvnw`, que en la p
 ```
 .\mvnw.cmd verify
 ```
-
-## Otra conexión a MySQL (opcional)
-
-Por defecto, la aplicación se conecta a `localhost:3306/agro` con el usuario `sigtoa_app`. Para usar otro servidor, usuario o contraseña, copiar `config/db.example.properties` como `config/db.local.properties` y modificarlo. Ese archivo no se sube al repositorio.
