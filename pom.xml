@@ -78,6 +78,9 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>com.comp.spiapp/com.comp.spiapp.Launcher</mainClass>
+                            <options>
+                                <option>--enable-native-access=javafx.graphics</option>
+                            </options>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

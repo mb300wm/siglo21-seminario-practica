@@ -1,7 +1,9 @@
 package com.comp.spiapp.service;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Path;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import java.util.Set;
 
 import com.comp.spiapp.model.Campania;
 import com.comp.spiapp.model.Lote;
+import com.comp.spiapp.repository.ArchivoTrazabilidad;
 import com.comp.spiapp.repository.CatalogoRepository;
 import com.comp.spiapp.repository.EtapaTrazabilidad;
 import com.comp.spiapp.repository.ConexionBD;
@@ -36,6 +39,7 @@ public final class ConsultaService {
     private final ConexionBD conexiones;
     private final CatalogoRepository catalogos;
     private final TrazabilidadRepository trazabilidad;
+    private final ArchivoTrazabilidad archivo = new ArchivoTrazabilidad();
 
     public ConsultaService() {
         this(ConexionBD.desdeConfiguracion(), new CatalogoRepository(), new TrazabilidadRepository());
@@ -68,6 +72,26 @@ public final class ConsultaService {
             return armar(campania, lotes, etapas, hectareas);
         } catch (SQLException ex) {
             throw OperacionException.desde(ex, "consultar la trazabilidad de la campaña");
+        }
+    }
+
+    /** Guarda en un archivo CSV las filas del reporte que está en pantalla. */
+    public void exportar(Path destino, List<String[]> filas) throws OperacionException {
+        try {
+            archivo.guardar(destino, filas);
+        } catch (IOException ex) {
+            throw new OperacionException(
+                "No se pudo guardar el archivo. Revisa que no esté abierto en otro programa", ex);
+        }
+    }
+
+    /** Recupera un reporte guardado. No usa MySQL: sirve aunque no haya conexión con el servidor. */
+    public List<String[]> importar(Path origen) throws OperacionException {
+        try {
+            return archivo.leer(origen);
+        } catch (IOException ex) {
+            throw new OperacionException(
+                "No se pudo abrir el archivo. Revisa que sea un reporte exportado por SIGTOA", ex);
         }
     }
 

@@ -1,5 +1,6 @@
 module com.comp.spiapp {
     requires java.sql;
+    requires java.prefs;
     requires mysql.connector.j;
     requires password4j;
     requires javafx.controls;

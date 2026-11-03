@@ -30,6 +30,7 @@ class ConsultaServiceTest {
                 resultado.lotes().stream().map(TrazabilidadLote::lote).toList(), "por establecimiento y lote");
         assertTrue(resultado.lotes().get(0).sinRegistrar(), "EL BAJO no tiene operaciones");
         assertEquals(1, resultado.lotesSinRegistrar());
+        assertArrayEquals(new int[]{2, 2, 1}, resultado.etapasPorTipo(), "siembras, trabajos y cosechas");
 
         List<EtapaLote> seisNorte = resultado.lotes().get(1).etapas();
         assertEquals(List.of("Siembra", "Trabajo - Pulverización terrestre", "Siembra", "Cosecha"),

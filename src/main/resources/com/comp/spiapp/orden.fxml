@@ -17,7 +17,7 @@
             <VBox spacing="14" styleClass="tarjeta">
                 <HBox fx:id="ordenExistenteBox" spacing="8" alignment="CENTER_LEFT">
                     <Label text="Orden *"/>
-                    <ComboBox fx:id="ordenCombo" promptText="Número · fecha · labor · establecimiento" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="ordenCombo" promptText="Número - fecha - labor - establecimiento" maxWidth="Infinity" HBox.hgrow="ALWAYS"/>
                     <Button fx:id="abrirOrdenButton" text="Abrir orden" onAction="#abrirOrden" styleClass="principal"/>
                 </HBox>
 

@@ -21,7 +21,7 @@
                         <ColumnConstraints hgrow="ALWAYS"/>
                     </columnConstraints>
                     <Label text="Siembra *" GridPane.rowIndex="0"/>
-                    <ComboBox fx:id="siembraCombo" promptText="Campaña · campo · lote · fecha · semilla" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                    <ComboBox fx:id="siembraCombo" promptText="Campaña - campo - lote - fecha - semilla" maxWidth="Infinity" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
                     <Label text="Fecha de inicio *" GridPane.rowIndex="1"/>
                     <DatePicker fx:id="fechaInicioPicker" promptText="dd/mm/aaaa" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
                     <Label text="Fecha de fin *" GridPane.rowIndex="2"/>

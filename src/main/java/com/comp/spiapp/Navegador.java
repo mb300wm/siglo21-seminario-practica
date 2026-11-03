@@ -139,7 +139,8 @@ public final class Navegador {
         }
         FXMLLoader loader = new FXMLLoader(ubicacion);
         loader.setController(controlador);
-        return new Scene(loader.load(), 850, 570);
+        Scene escena = new Scene(loader.load(), 850, 570);
+        return escena;
     }
 
     public void cerrar() {

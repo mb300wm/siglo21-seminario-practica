@@ -17,6 +17,6 @@ public record ResumenOrden(
 
     @Override 
     public String toString() {
-        return numero + " · " + fecha.format(FECHA) + " · " + labor + " · " + establecimiento;
+        return numero + " - " + fecha.format(FECHA) + " - " + labor + " - " + establecimiento;
     }
 }

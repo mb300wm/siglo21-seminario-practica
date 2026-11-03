@@ -1,8 +1,12 @@
 # SIGTOA
 
-Sistema de Gestión y Trazabilidad de Operaciones Agrícolas. Prototipo en Java del TP3 de Seminario de Práctica de Informática (Universidad Siglo 21).
+Sistema de Gestión y Trazabilidad de Operaciones Agrícolas. Prototipo en Java del TP4 de Seminario de Práctica de Informática (Universidad Siglo 21).
 
-Incluye: iniciar sesión (CU-01), registrar siembras (CU-02) y cosechas (CU-03), registrar órdenes de trabajo (CU-04) con sus aplicaciones de insumos (CU-05) y consultar la trazabilidad por campaña (CU-07).
+Incluye: iniciar sesión (CU-01), registrar siembras (CU-02) y cosechas (CU-03), registrar órdenes de trabajo (CU-04) con sus aplicaciones de insumos (CU-05) y consultar la trazabilidad por campaña (CU-07). El reporte de trazabilidad se puede exportar a un archivo CSV y volver a abrir sin conexión a MySQL.
+
+## Diseño
+
+La aplicación sigue la arquitectura MVC y usa el patrón Repository para la persistencia: vista FXML → `controller` → `service` → `repository` → MySQL. Todo el SQL está en el paquete `repository`.
 
 ## Requisitos
 
@@ -21,11 +25,6 @@ No hace falta instalar Maven. El proyecto incluye el wrapper `mvnw`, que en la p
    .\mvnw.cmd javafx:run
    ```
 
-   En Linux o macOS: `./mvnw javafx:run`.
-3. Ingresar con el usuario `usuario_demo` y la contraseña `sigtoa-demo-2026`.
+## Otra conexión a MySQL
 
-## Pruebas
-
-```
-.\mvnw.cmd verify
-```
+Por defecto, la aplicación se conecta a `localhost:3306/agro` con el usuario `sigtoa_app`. Para usar otro servidor, usuario o contraseña, copiar `config/db.example.properties` como `config/db.local.properties` y modificarlo. Ese archivo no se sube al repositorio.

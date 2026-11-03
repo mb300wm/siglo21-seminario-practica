@@ -39,8 +39,8 @@ final class Formato {
     }
 
     static String siembra(Siembra siembra) {
-        return siembra.getCampania().getNombre() + " · " + siembra.getLote().getEstablecimiento().getNombre()
-                + " · " + siembra.getLote().getNombre() + " · " + fecha(siembra.getFechaInicio())
-                + " · " + siembra.getSemilla().getNombre();
+        return siembra.getCampania().getNombre() + " - " + siembra.getLote().getEstablecimiento().getNombre()
+                + " - " + siembra.getLote().getNombre() + " - " + fecha(siembra.getFechaInicio())
+                + " - " + siembra.getSemilla().getNombre();
     }
 }

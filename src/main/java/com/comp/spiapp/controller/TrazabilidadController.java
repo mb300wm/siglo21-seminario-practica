@@ -1,8 +1,12 @@
 package com.comp.spiapp.controller;
 
+import java.io.File;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.prefs.Preferences;
 
 import com.comp.spiapp.model.Campania;
 import com.comp.spiapp.repository.EtapaTrazabilidad;
@@ -21,18 +25,28 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
+import javafx.stage.FileChooser;
 
 /**
  * CU-07: el actor elige una campaña y ve, agrupada por lote y en orden cronológico,
  * cada siembra, trabajo y cosecha. Los lotes sin operaciones figuran como "sin registrar".
  */
 public final class TrazabilidadController {
+    private static final String SIN_REGISTRAR = "Sin registrar";
+    /** Carpeta del último CSV guardado o abierto; Java la recuerda entre ejecuciones. */
+    private static final Preferences PREFERENCIAS = Preferences.userNodeForPackage(TrazabilidadController.class);
+    private static final String ULTIMA_CARPETA = "ultimaCarpetaCsv";
+
     private final ConsultaService servicio;
     private final SesionUsuario sesion;
     private final Runnable alVolver;
+    private List<String[]> filas = List.of();
+    private String campaniaMostrada;
 
     @FXML private ComboBox<Campania> campaniaCombo;
     @FXML private Button consultarButton;
+    @FXML private Button exportarButton;
+    @FXML private Button limpiarButton;
     @FXML private TreeTableView<Fila> trazabilidadTable;
     @FXML private TreeTableColumn<Fila, String> loteFechaColumn;
     @FXML private TreeTableColumn<Fila, String> etapaColumn;
@@ -94,37 +108,148 @@ public final class TrazabilidadController {
     }
 
     private void mostrar(TrazabilidadCampania resultado) {
-        TreeItem<Fila> raiz = new TreeItem<>();
+        campaniaMostrada = resultado.campania().getNombre();
         if (resultado.sinOperaciones()) {
-            trazabilidadTable.setRoot(raiz);
-            Formulario.informar(mensajeLabel, List.of("La campaña " + resultado.campania().getNombre()
+            filas = List.of();
+            trazabilidadTable.setRoot(new TreeItem<>());
+            exportarButton.setDisable(true);
+            limpiarButton.setDisable(false);
+            Formulario.informar(mensajeLabel, List.of("La campaña " + campaniaMostrada
                     + " no tiene operaciones registradas."), false);
             return;
         }
-        for (TrazabilidadLote lote : resultado.lotes()) {
-            TreeItem<Fila> nodo = new TreeItem<>(new Fila(lote.lote() + " · " + lote.establecimiento(),
-                    lote.sinRegistrar() ? "Sin registrar" : "", "", "", "", "", ""));
-            for (EtapaLote etapa : lote.etapas()) {
-                nodo.getChildren().add(new TreeItem<>(fila(etapa)));
-            }
-            nodo.setExpanded(true);
-            raiz.getChildren().add(nodo);
-        }
-        trazabilidadTable.setRoot(raiz);
+        filas = filas(resultado);
+        trazabilidadTable.setRoot(arbol(filas));
+        exportarButton.setDisable(false);
+        limpiarButton.setDisable(false);
         int conOperaciones = resultado.lotes().size() - (int) resultado.lotesSinRegistrar();
-        Formulario.informar(mensajeLabel, List.of("Campaña " + resultado.campania().getNombre() + ": "
+        int[] etapas = resultado.etapasPorTipo();
+        Formulario.informar(mensajeLabel, List.of("Campaña " + campaniaMostrada + ": "
                 + conOperaciones + " lotes con operaciones y " + resultado.lotesSinRegistrar()
-                + " sin registrar."), true);
+                + " sin registrar. Siembras: " + etapas[0] + ", trabajos: " + etapas[1]
+                + ", cosechas: " + etapas[2] + "."), true);
     }
 
-    private static Fila fila(EtapaLote etapaLote) {
+    private String limpiarNombre(String t) {
+        StringBuilder res = new StringBuilder();
+
+        for (char c : t.toCharArray()) {
+            if (Character.isLetterOrDigit(c) || c == '_' || c == '-') {
+                res.append(c);
+            } else {
+                res.append('_');
+            }
+        }
+
+        return res.toString();
+    }
+
+    @FXML
+    private void exportar() {
+        FileChooser selector = selectorCsv("Exportar trazabilidad");
+        String nombre = limpiarNombre(campaniaMostrada);
+        selector.setInitialFileName("trazabilidad-" + nombre + ".csv");
+        File destino = selector.showSaveDialog(trazabilidadTable.getScene().getWindow());
+        if (destino != null) {
+            recordarCarpeta(destino);
+            exportarA(destino.toPath());
+        }
+    }
+
+    /** Guarda la consulta en pantalla en el archivo elegido. */
+    public void exportarA(Path destino) {
+        List<String[]> reporte = filas;
+        Tareas.ejecutar("sigtoa-exportar", () -> {
+            servicio.exportar(destino, reporte);
+            return reporte.size();
+        }, cantidad -> Formulario.informar(mensajeLabel,
+                List.of("Reporte guardado en " + destino.getFileName() + ": " + cantidad + " filas."), true),
+                error -> Formulario.informar(mensajeLabel, Formulario.mensajesDe(error), false));
+    }
+
+    @FXML
+    private void abrir() {
+        File origen = selectorCsv("Abrir reporte de trazabilidad")
+                .showOpenDialog(trazabilidadTable.getScene().getWindow());
+        if (origen != null) {
+            recordarCarpeta(origen);
+            abrirDesde(origen.toPath());
+        }
+    }
+
+    /** Muestra un reporte guardado. Funciona sin conexión a MySQL. */
+    public void abrirDesde(Path origen) {
+        Tareas.ejecutar("sigtoa-abrir", () -> servicio.importar(origen), reporte -> {
+            filas = reporte;
+            trazabilidadTable.setRoot(arbol(reporte));
+            exportarButton.setDisable(true);
+            limpiarButton.setDisable(false);
+            Formulario.informar(mensajeLabel,
+                    List.of("Reporte abierto desde " + origen.getFileName() + ": " + reporte.size() + " filas."), true);
+        }, error -> Formulario.informar(mensajeLabel, Formulario.mensajesDe(error), false));
+    }
+
+    private static FileChooser selectorCsv(String titulo) {
+        FileChooser selector = new FileChooser();
+        selector.setTitle(titulo);
+        selector.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos CSV", "*.csv"));
+        File carpeta = new File(PREFERENCIAS.get(ULTIMA_CARPETA, System.getProperty("user.home")));
+        if (carpeta.isDirectory()) {
+            selector.setInitialDirectory(carpeta);
+        }
+        return selector;
+    }
+
+    private static void recordarCarpeta(File archivo) {
+        if (archivo.getParent() != null) {
+            PREFERENCIAS.put(ULTIMA_CARPETA, archivo.getParent());
+        }
+    }
+
+    /** Pasa el resultado a filas de texto: es lo mismo que se ve en pantalla y que se guarda en el CSV. */
+    private static List<String[]> filas(TrazabilidadCampania resultado) {
+        List<String[]> filas = new ArrayList<>();
+        for (TrazabilidadLote lote : resultado.lotes()) {
+            String nombre = lote.lote() + " - " + lote.establecimiento();
+            if (lote.sinRegistrar()) {
+                filas.add(new String[]{nombre, "", SIN_REGISTRAR, "", "", "", "", ""});
+            }
+            for (EtapaLote etapa : lote.etapas()) {
+                filas.add(fila(nombre, etapa));
+            }
+        }
+        return filas;
+    }
+
+    private static String[] fila(String lote, EtapaLote etapaLote) {
         EtapaTrazabilidad datos = etapaLote.datos();
         String cantidad = datos.cantidad() == null ? ""
                 : Formato.numero(datos.cantidad(), 3) + (datos.unidad() == null ? "" : " " + datos.unidad());
         String rinde = !datos.esCosecha() ? "" : etapaLote.rinde() == null ? "sin dato" : kgHa(etapaLote.rinde());
-        String orden = datos.numeroOrden() == null ? "" : datos.numeroOrden() + " · " + datos.contratista();
-        return new Fila(Formato.fecha(datos.fecha()), datos.etapa(), datos.detalle(), cantidad, rinde, orden,
-                ciclo(etapaLote));
+        String orden = datos.numeroOrden() == null ? "" : datos.numeroOrden() + " - " + datos.contratista();
+        return new String[]{lote, Formato.fecha(datos.fecha()), datos.etapa(), datos.detalle(), cantidad, rinde,
+                orden, ciclo(etapaLote)};
+    }
+
+    /** Agrupa por lote: un nodo por cada lote y una hoja por cada etapa. */
+    private static TreeItem<Fila> arbol(List<String[]> filas) {
+        TreeItem<Fila> raiz = new TreeItem<>();
+        TreeItem<Fila> nodo = null;
+        String loteActual = null;
+        for (String[] fila : filas) {
+            boolean sinRegistrar = SIN_REGISTRAR.equals(fila[2]);
+            if (!fila[0].equals(loteActual)) {
+                loteActual = fila[0];
+                nodo = new TreeItem<>(new Fila(loteActual, sinRegistrar ? SIN_REGISTRAR : "", "", "", "", "", ""));
+                nodo.setExpanded(true);
+                raiz.getChildren().add(nodo);
+            }
+            if (!sinRegistrar) {
+                nodo.getChildren().add(new TreeItem<>(
+                        new Fila(fila[1], fila[2], fila[3], fila[4], fila[5], fila[6], fila[7])));
+            }
+        }
+        return raiz;
     }
 
     private static String ciclo(EtapaLote etapa) {
@@ -133,7 +258,7 @@ public final class TrazabilidadController {
         }
         String ciclo = "Ciclo " + etapa.ciclo();
         if (etapa.sinCosecha()) {
-            return ciclo + " · sin cosecha registrada";
+            return ciclo + " - sin cosecha registrada";
         }
         if (etapa.siembraDelCiclo() != null) {
             return ciclo + " (siembra del " + Formato.fecha(etapa.siembraDelCiclo()) + ")";
@@ -143,6 +268,18 @@ public final class TrazabilidadController {
 
     private static String kgHa(BigDecimal rinde) {
         return Formato.numero(rinde) + " kg/ha";
+    }
+
+    /** Deja la pantalla como al entrar, sin volver al menú. */
+    @FXML
+    private void limpiar() {
+        filas = List.of();
+        campaniaMostrada = null;
+        campaniaCombo.setValue(null);
+        trazabilidadTable.setRoot(null);
+        exportarButton.setDisable(true);
+        limpiarButton.setDisable(true);
+        mensajeLabel.setText("");
     }
 
     @FXML

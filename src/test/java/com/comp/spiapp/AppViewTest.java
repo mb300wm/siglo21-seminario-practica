@@ -4,6 +4,8 @@ import com.comp.spiapp.controller.CosechaController;
 import com.comp.spiapp.controller.MenuController;
 import com.comp.spiapp.controller.OrdenTrabajoController;
 import com.comp.spiapp.controller.SiembraController;
+import org.junit.jupiter.api.io.TempDir;
+
 import com.comp.spiapp.controller.TrazabilidadController;
 import com.comp.spiapp.model.AplicacionInsumo;
 import com.comp.spiapp.model.OrdenLote;
@@ -440,25 +442,103 @@ class AppViewTest {
         });
         esperar(() -> mensaje(escena).contains("sin registrar."));
         enFx(() -> {
-            assertEquals("Campaña 25-26: 2 lotes con operaciones y 1 sin registrar.", mensaje(escena));
+            assertEquals("Campaña 25-26: 2 lotes con operaciones y 1 sin registrar. "
+                    + "Siembras: 2, trabajos: 2, cosechas: 1.", mensaje(escena));
             var tabla = (TreeTableView<?>) escena.lookup("#trazabilidadTable");
             var lotes = tabla.getRoot().getChildren();
             assertEquals(3, lotes.size());
-            assertEquals("EL BAJO · EL CARMEN", celda(tabla, lotes.get(0), 0));
+            assertEquals("EL BAJO - EL CARMEN", celda(tabla, lotes.get(0), 0));
             assertEquals("Sin registrar", celda(tabla, lotes.get(0), 1));
 
             var seisNorte = lotes.get(1).getChildren();
             assertEquals(4, seisNorte.size());
             assertEquals("15/10/2025", celda(tabla, seisNorte.get(0), 0));
             assertEquals("Ciclo 1", celda(tabla, seisNorte.get(0), 6));
-            assertEquals("25-26-0001 · Contratista de prueba", celda(tabla, seisNorte.get(1), 5));
-            assertEquals("Ciclo 2 · sin cosecha registrada", celda(tabla, seisNorte.get(2), 6));
+            assertEquals("25-26-0001 - Contratista de prueba", celda(tabla, seisNorte.get(1), 5));
+            assertEquals("Ciclo 2 - sin cosecha registrada", celda(tabla, seisNorte.get(2), 6));
             assertEquals("42.000 kg", celda(tabla, seisNorte.get(3), 3));
             assertEquals("2.100 kg/ha", celda(tabla, seisNorte.get(3), 4));
             assertEquals("Ciclo 1 (siembra del 15/10/2025)", celda(tabla, seisNorte.get(3), 6));
             assertEquals("Trabajo - Labranza", celda(tabla, lotes.get(2).getChildren().getFirst(), 1));
             return null;
         });
+    }
+
+    /** Limpiar vacía la tabla y deja la pantalla como al entrar. */
+    @Test
+    void trazabilidadSeLimpiaSinVolverAlMenu() throws Exception {
+        Scene escena = enFx(() -> cargar("trazabilidad.fxml",
+                new TrazabilidadController(consultas, sesionIniciada(), () -> fail("No debería volver"))));
+        esperar(() -> !combo(escena, "#campaniaCombo").getItems().isEmpty());
+        enFx(() -> {
+            assertTrue(boton(escena, "#limpiarButton").isDisabled(), "sin consulta no hay nada para limpiar");
+            combo(escena, "#campaniaCombo").getSelectionModel().selectFirst();
+            boton(escena, "#consultarButton").fire();
+            return null;
+        });
+        esperar(() -> mensaje(escena).contains("sin registrar."));
+        enFx(() -> {
+            boton(escena, "#limpiarButton").fire();
+            assertNull(((TreeTableView<?>) escena.lookup("#trazabilidadTable")).getRoot());
+            assertNull(combo(escena, "#campaniaCombo").getValue());
+            assertEquals("", mensaje(escena));
+            assertTrue(boton(escena, "#exportarButton").isDisabled());
+            assertTrue(boton(escena, "#limpiarButton").isDisabled());
+            return null;
+        });
+    }
+
+    /** Lo exportado vuelve a la pantalla igual, agrupado por lote y con el lote sin registrar. */
+    @Test
+    void trazabilidadSeExportaYSeRecuperaDesdeUnArchivo(@TempDir java.nio.file.Path carpeta) throws Exception {
+        var controlador = new TrazabilidadController(consultas, sesionIniciada(), () -> fail("No debería volver"));
+        Scene escena = enFx(() -> cargar("trazabilidad.fxml", controlador));
+        esperar(() -> !combo(escena, "#campaniaCombo").getItems().isEmpty());
+        enFx(() -> {
+            assertTrue(boton(escena, "#exportarButton").isDisabled(), "sin consulta no hay nada para exportar");
+            combo(escena, "#campaniaCombo").getSelectionModel().selectFirst();
+            boton(escena, "#consultarButton").fire();
+            return null;
+        });
+        esperar(() -> mensaje(escena).contains("sin registrar."));
+
+        var archivo = carpeta.resolve("trazabilidad.csv");
+        enFx(() -> {
+            assertFalse(boton(escena, "#exportarButton").isDisabled());
+            controlador.exportarA(archivo);
+            return null;
+        });
+        esperar(() -> mensaje(escena).startsWith("Reporte guardado"));
+
+        var tabla = (TreeTableView<?>) escena.lookup("#trazabilidadTable");
+        enFx(() -> {
+            tabla.setRoot(null);
+            controlador.abrirDesde(archivo);
+            return null;
+        });
+        esperar(() -> mensaje(escena).startsWith("Reporte abierto"));
+        enFx(() -> {
+            var lotes = tabla.getRoot().getChildren();
+            assertEquals(3, lotes.size());
+            assertEquals("Sin registrar", celda(tabla, lotes.get(0), 1));
+            assertEquals(4, lotes.get(1).getChildren().size());
+            assertEquals("2.100 kg/ha", celda(tabla, lotes.get(1).getChildren().get(3), 4));
+            return null;
+        });
+    }
+
+    /** Un archivo ajeno se informa en pantalla y no reemplaza lo que se estaba viendo. */
+    @Test
+    void trazabilidadRechazaUnArchivoQueNoEsUnReporte(@TempDir java.nio.file.Path carpeta) throws Exception {
+        var controlador = new TrazabilidadController(consultas, sesionIniciada(), () -> fail("No debería volver"));
+        Scene escena = enFx(() -> cargar("trazabilidad.fxml", controlador));
+        esperar(() -> !combo(escena, "#campaniaCombo").getItems().isEmpty());
+        var archivo = java.nio.file.Files.writeString(carpeta.resolve("otro.csv"), "a;b\n1;2\n");
+        enFx(() -> {
+            controlador.abrirDesde(archivo);
+            return null;
+        });
+        esperar(() -> mensaje(escena).startsWith("No se pudo abrir el archivo"));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

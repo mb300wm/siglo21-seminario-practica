@@ -13,10 +13,13 @@
                 <Button fx:id="volverButton" text="Volver al menú" onAction="#volver"/>
             </HBox>
             <HBox alignment="CENTER_LEFT" spacing="8">
-                <Label text="Campaña *"/>
+                <Label text="Campaña"/>
                 <ComboBox fx:id="campaniaCombo" promptText="Seleccionar" prefWidth="160"/>
                 <Button fx:id="consultarButton" text="Consultar" defaultButton="true" onAction="#consultar" styleClass="principal"/>
-                <Label text="Siembra → trabajos → cosecha, agrupados por lote" styleClass="subtitulo"/>
+                <Button fx:id="limpiarButton" text="Limpiar" disable="true" onAction="#limpiar"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="exportarButton" text="Exportar CSV" disable="true" onAction="#exportar"/>
+                <Button fx:id="abrirButton" text="Abrir CSV" onAction="#abrir"/>
             </HBox>
         </VBox>
     </top>
@@ -30,7 +33,7 @@
                 <TreeTableColumn fx:id="detalleColumn" text="Detalle" prefWidth="150" sortable="false"/>
                 <TreeTableColumn fx:id="cantidadColumn" text="Cantidad" prefWidth="90" sortable="false"/>
                 <TreeTableColumn fx:id="rindeColumn" text="Rinde" prefWidth="90" sortable="false"/>
-                <TreeTableColumn fx:id="ordenColumn" text="Orden · contratista" prefWidth="170" sortable="false"/>
+                <TreeTableColumn fx:id="ordenColumn" text="Orden - contratista" prefWidth="170" sortable="false"/>
                 <TreeTableColumn fx:id="cicloColumn" text="Ciclo" prefWidth="170" sortable="false"/>
             </columns>
         </TreeTableView>
